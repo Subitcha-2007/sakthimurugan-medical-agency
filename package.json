@@ -1,0 +1,28 @@
+{
+  "name": "sakthimurugan-medical-agency",
+  "version": "1.0.0",
+  "description": "Sakthimurugan Medical Agency - Professional B2B Wholesale Medicine E-Commerce, Inventory, Order & Delivery Management Platform",
+  "main": "backend/server.js",
+  "scripts": {
+    "install:all": "npm --prefix backend install && npm --prefix frontend install",
+    "build": "npm --prefix backend install && npm --prefix frontend install && npm --prefix frontend run build",
+    "start": "node backend/server.js",
+    "server": "npm --prefix backend start",
+    "client": "npm --prefix frontend run dev",
+    "dev": "npm --prefix backend start"
+  },
+  "keywords": [
+    "b2b",
+    "pharmaceutical",
+    "wholesale",
+    "medicine",
+    "mern-stack",
+    "express",
+    "react",
+    "mongodb",
+    "tamil-nadu",
+    "erode"
+  ],
+  "author": "Sakthimurugan Medical Agency",
+  "license": "ISC"
+}
