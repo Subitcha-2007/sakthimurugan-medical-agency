@@ -38,6 +38,25 @@ const MedicinesPage = () => {
 
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
+  // Synchronize state whenever URL query params change (e.g. from Navbar search or Category links)
+  useEffect(() => {
+    const urlSearch = searchParams.get('search') || '';
+    const urlCat = searchParams.get('category') || 'all';
+    const urlMfg = searchParams.get('manufacturer') || 'all';
+    const urlDosage = searchParams.get('dosageForm') || 'all';
+    const urlStock = searchParams.get('inStock') === 'true';
+    const urlSort = searchParams.get('sortBy') || 'featured';
+    const urlPage = parseInt(searchParams.get('page') || '1', 10);
+
+    setSearch(urlSearch);
+    setCategory(urlCat);
+    setManufacturer(urlMfg);
+    setDosageForm(urlDosage);
+    setInStockOnly(urlStock);
+    setSortBy(urlSort);
+    setCurrentPage(urlPage);
+  }, [searchParams]);
+
   // Fetch Categories once
   useEffect(() => {
     const fetchCats = async () => {
@@ -55,6 +74,7 @@ const MedicinesPage = () => {
 
   // Fetch Medicines when filters / pagination change
   useEffect(() => {
+    let isMounted = true;
     const fetchMedicines = async () => {
       try {
         setLoading(true);
@@ -70,7 +90,7 @@ const MedicinesPage = () => {
         params.append('limit', '12');
 
         const res = await api.get(`/medicines?${params.toString()}`);
-        if (res.data.success) {
+        if (isMounted && res.data.success) {
           setMedicines(res.data.medicines || []);
           setTotalPages(res.data.totalPages || 1);
           setTotalCount(res.data.total || 0);
@@ -79,14 +99,46 @@ const MedicinesPage = () => {
           }
         }
       } catch (err) {
-        console.error('Error fetching medicines:', err);
+        if (isMounted) console.error('Error fetching medicines:', err);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
     fetchMedicines();
+    return () => {
+      isMounted = false;
+    };
   }, [search, category, manufacturer, dosageForm, inStockOnly, sortBy, currentPage]);
+
+  const updateFiltersAndUrl = (updates) => {
+    const newSearch = updates.search !== undefined ? updates.search : search;
+    const newCategory = updates.category !== undefined ? updates.category : category;
+    const newMfg = updates.manufacturer !== undefined ? updates.manufacturer : manufacturer;
+    const newDosage = updates.dosageForm !== undefined ? updates.dosageForm : dosageForm;
+    const newStock = updates.inStockOnly !== undefined ? updates.inStockOnly : inStockOnly;
+    const newSort = updates.sortBy !== undefined ? updates.sortBy : sortBy;
+    const newPage = updates.currentPage !== undefined ? updates.currentPage : 1;
+
+    if (updates.search !== undefined) setSearch(newSearch);
+    if (updates.category !== undefined) setCategory(newCategory);
+    if (updates.manufacturer !== undefined) setManufacturer(newMfg);
+    if (updates.dosageForm !== undefined) setDosageForm(newDosage);
+    if (updates.inStockOnly !== undefined) setInStockOnly(newStock);
+    if (updates.sortBy !== undefined) setSortBy(newSort);
+    setCurrentPage(newPage);
+
+    const newParams = {};
+    if (newSearch && newSearch.trim()) newParams.search = newSearch.trim();
+    if (newCategory && newCategory !== 'all') newParams.category = newCategory;
+    if (newMfg && newMfg !== 'all') newParams.manufacturer = newMfg;
+    if (newDosage && newDosage !== 'all') newParams.dosageForm = newDosage;
+    if (newStock) newParams.inStock = 'true';
+    if (newSort && newSort !== 'featured') newParams.sortBy = newSort;
+    if (newPage > 1) newParams.page = String(newPage);
+
+    setSearchParams(newParams);
+  };
 
   const handleResetFilters = () => {
     setSearch('');
@@ -118,19 +170,48 @@ const MedicinesPage = () => {
 
         {/* Search inside catalog */}
         <div className="w-full md:max-w-md">
-          <div className="relative">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              updateFiltersAndUrl({ search, currentPage: 1 });
+            }}
+            className="relative flex items-center"
+          >
             <input
               type="text"
               placeholder="Filter by medicine, active salt, brand..."
               value={search}
               onChange={(e) => {
-                setSearch(e.target.value);
+                const val = e.target.value;
+                setSearch(val);
                 setCurrentPage(1);
               }}
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-white border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-medical-500 outline-none"
+              onBlur={() => {
+                updateFiltersAndUrl({ search, currentPage: 1 });
+              }}
+              className="w-full pl-10 pr-20 py-2.5 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-white border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-medical-500 outline-none transition"
             />
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
-          </div>
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5" />
+            {search && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearch('');
+                  updateFiltersAndUrl({ search: '', currentPage: 1 });
+                }}
+                className="absolute right-14 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs px-1"
+                title="Clear search"
+              >
+                &times;
+              </button>
+            )}
+            <button
+              type="submit"
+              className="absolute right-1.5 px-3 py-1 bg-medical-600 hover:bg-medical-700 text-white rounded-lg text-xs font-semibold shadow-sm transition"
+            >
+              Search
+            </button>
+          </form>
         </div>
       </div>
 
