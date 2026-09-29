@@ -1,9 +1,22 @@
-# SAKTHIMURUGAN MEDICAL AGENCY
-### Professional B2B Wholesale Medicine E-Commerce, Inventory, Order & Delivery Management Platform
+# Sakthimurugan Medical Agency
 
-> **Address:** 50, 1st Floor, Kamaraj Street, Erode, Tamil Nadu - 638001  
+Wholesale Medicine Distribution Platform
+
+## Technology Stack
+
+- MongoDB
+- Express.js
+- React.js
+- Node.js
+
+## Stack
+MERN Stack
+
+---
+
+> **Headquarters:** 50, 1st Floor, Kamaraj Street, Erode, Tamil Nadu - 638001  
 > **Direct Booking Helplines:** 9994446994 | 9865730150  
-> **Business Model:** B2B Wholesale Medicine Supply & Logistics Distribution  
+> **Business Model:** B2B Wholesale Pharmaceutical E-Commerce, Inventory & Delivery Logistics  
 > **Proposed Service Regions:** Erode, Karur, Namakkal, Salem  
 > **Regulatory Approvals:** Form 20B & 21B Wholesale Drug Licenses & GST Compliant  
 
