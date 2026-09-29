@@ -16,11 +16,14 @@ node_modules/
 *.backup
 *.bak
 
-# Build outputs
+# Build outputs & binaries
 dist/
 build/
 */dist/
 */build/
+*.exe
+cloudflared.exe
+
 
 # Logs & cache
 *.log
