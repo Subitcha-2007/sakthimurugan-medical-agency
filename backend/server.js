@@ -58,23 +58,36 @@ app.use('/api/invoices', invoiceRoutes);
 app.use('/api/admin', adminRoutes);
 
 // Serve Frontend in Production with SPA Catch-All
-const distPath = path.join(__dirname, '../frontend/dist');
+const distPath = path.resolve(__dirname, '../frontend/dist');
 app.use(express.static(distPath));
 
 app.get('*', (req, res, next) => {
   if (req.originalUrl.startsWith('/api')) {
     return next();
   }
-  res.sendFile(path.join(distPath, 'index.html'), (err) => {
+  const indexPath = path.join(distPath, 'index.html');
+  res.sendFile(indexPath, (err) => {
     if (err) {
       res.status(200).send(`
         <!DOCTYPE html>
-        <html>
-        <head><title>Sakthimurugan Medical Agency API</title></head>
-        <body style="font-family: sans-serif; padding: 40px; text-align: center;">
-          <h2>SAKTHIMURUGAN MEDICAL AGENCY</h2>
-          <p>B2B Wholesale Medicine Management API is Running on Port ${process.env.PORT || 5000}.</p>
-          <p>Frontend client building in progress or accessible on Vite dev server (Port 5173).</p>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>Sakthimurugan Medical Agency</title>
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; background: #0f172a; color: #fff; text-align: center; padding: 20px; }
+            .card { background: #1e293b; border: 1px solid #334155; padding: 32px; border-radius: 16px; max-width: 480px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+            h1 { font-size: 20px; margin-bottom: 8px; color: #38bdf8; }
+            p { font-size: 14px; color: #94a3b8; line-height: 1.5; }
+          </style>
+        </head>
+        <body>
+          <div class="card">
+            <h1>Sakthimurugan Medical Agency</h1>
+            <p>B2B Wholesale Medicine Management API is active on port ${process.env.PORT || 5000}.</p>
+            <p>Building production client assets...</p>
+          </div>
         </body>
         </html>
       `);
